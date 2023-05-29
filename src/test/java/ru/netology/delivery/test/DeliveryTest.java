@@ -26,27 +26,37 @@ class DeliveryTest {
     @Test
     @DisplayName("Should successful plan and replan meeting")
     void shouldSuccessfulPlanAndReplanMeeting() {
-        //Configuration.holdBrowserOpen=true;
         var daysToAddForFirstMeeting = 4;
         var firstMeetingDate = DataGenerator.generateDate(daysToAddForFirstMeeting);
         var daysToAddForSecondMeeting = 7;
         var secondMeetingDate = DataGenerator.generateDate(daysToAddForSecondMeeting);
-            $("[data-test-id='city'] input").setValue(DataGenerator.generateCity());
-            $("[data-test-id='date'] input").sendKeys(Keys.chord(Keys.LEFT_SHIFT, Keys.HOME), Keys.BACK_SPACE);
-            $("[data-test-id='date'] input").setValue(firstMeetingDate);
-            $("[data-test-id='name'] input").setValue(DataGenerator.generateName());
-            $("[data-test-id='phone'] input").setValue(DataGenerator.generatePhone());
-            $("[data-test-id='agreement']").click();
-            $$("button").find(exactText("Забронировать")).click();
-            $(".notification__content")
-                    .shouldHave(Condition.text("Встреча успешно забронирована на " + firstMeetingDate), Duration.ofSeconds(15))
-                    .shouldBe(Condition.visible);
-            $(".notification .icon-button").click();
+        var user = DataGenerator.Registration.generateUser();
+        $("[data-test-id='city'] input").setValue(user.getCity());
+        $("[data-test-id='date'] input").sendKeys(Keys.chord(Keys.LEFT_SHIFT, Keys.HOME), Keys.BACK_SPACE);
+        $("[data-test-id='date'] input").setValue(firstMeetingDate);
+        $("[data-test-id='name'] input").setValue(user.getName());
+        $("[data-test-id='phone'] input").setValue(user.getPhone());
+        $("[data-test-id='agreement']").click();
+        $$("button").find(exactText("Запланировать")).click();
+        $("[data-test-id='success-notification']")
+                .shouldHave(Condition.text("Встреча успешно запланирована на " + firstMeetingDate), Duration.ofSeconds(15))
+                .shouldBe(Condition.visible)
+                .find("button").click();
+        open("http://localhost:9999");
+        $("[data-test-id='city'] input").setValue(user.getCity());
         $("[data-test-id='date'] input").sendKeys(Keys.chord(Keys.LEFT_SHIFT, Keys.HOME), Keys.BACK_SPACE);
         $("[data-test-id='date'] input").setValue(secondMeetingDate);
-        $$("button").find(exactText("Забронировать")).click();
-        $(".notification__content")
-                .shouldHave(Condition.text("Встреча успешно забронирована на " + secondMeetingDate), Duration.ofSeconds(15))
-                .shouldBe(Condition.visible);
+        $("[data-test-id='name'] input").setValue(user.getName());
+        $("[data-test-id='phone'] input").setValue(user.getPhone());
+        $("[data-test-id='agreement']").click();
+        $$("button").find(exactText("Запланировать")).click();
+        $("[data-test-id='replan-notification']")
+                .shouldHave(Condition.text("У вас уже запланирована встреча на другую дату. Перепланировать?"), Duration.ofSeconds(15))
+                .shouldBe(Condition.visible)
+                .find(".button").click();
+        $("[data-test-id='success-notification']")
+                .shouldHave(Condition.text("Встреча успешно запланирована на " + secondMeetingDate), Duration.ofSeconds(15))
+                .shouldBe(Condition.visible)
+                .find("button").click();
     }
 }

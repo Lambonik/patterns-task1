@@ -13,12 +13,13 @@ import java.util.Random;
 
 public class DataGenerator {
     static Faker faker = new Faker(new Locale("ru"));
+
     private DataGenerator() {
 
     }
 
     public static String generateDate(int shift) {
-            String date = LocalDate.now().plusDays(shift).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+        String date = LocalDate.now().plusDays(shift).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
         return date;
     }
 
@@ -43,11 +44,9 @@ public class DataGenerator {
         private Registration() {
         }
 
-        public static UserInfo generateUser(String locale) {
-            // TODO: добавить логику для создания пользователя user с использованием методов generateCity(locale),
-            // generateName(locale), generatePhone(locale)
-            //return user;
-            return null;
+        public static UserInfo generateUser() {
+            UserInfo user = new UserInfo(generateCity(), generateName(), generatePhone());
+            return user;
         }
     }
 
